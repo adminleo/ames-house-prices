@@ -1,0 +1,5 @@
+model,best_params,f1_tuned_and_scored_on_same_folds,f1_nested_cv,optimism
+decision tree,"{'max_depth': 5, 'min_samples_leaf': 1}",0.758,0.731,0.027
+k-nearest neighbours,"{'n_neighbors': 3, 'weights': 'uniform'}",0.744,0.725,0.019
+logistic regression,{'C': 0.3},0.819,0.819,0.0
+random forest,"{'max_features': 0.3, 'min_samples_leaf': 1, 'n_estimators': 300}",0.833,0.826,0.008

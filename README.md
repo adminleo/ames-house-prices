@@ -70,6 +70,34 @@ estimated price as well as the label, so the same training run answers both
 phases of the brief. When a categorical target was manufactured by thresholding
 a number you still have, model the number.
 
+## Tuning a model on the folds you then score it on
+
+Four families, each tuned by grid search, each scored two ways: once on the same
+folds the search used, and once with nested cross-validation, where the search
+runs inside every training split.
+
+| model | same folds | nested CV | optimism |
+|---|---:|---:|---:|
+| decision tree | 0.758 | 0.731 | **+0.027** |
+| k-nearest neighbours | 0.744 | 0.725 | +0.019 |
+| logistic regression | 0.819 | 0.819 | **+0.000** |
+| random forest | 0.833 | 0.826 | +0.008 |
+
+`GridSearchCV.best_score_` is the score of the configuration that won on those
+folds, so quoting it as the model's performance counts the winner's luck as
+skill. The size of that bias tracks how hard you searched and how unstable the
+estimator is: twelve configurations of a high-variance tree inflate F1 by 0.027,
+four values of `C` on a linear model by nothing at all.
+
+The other result in that table is that **logistic regression lands within 0.007
+F1 of a tuned random forest** (0.819 against 0.826) under honest evaluation. On
+one-hot encoded Ames features the expensive/not boundary is close to linear, so
+the forest's extra capacity buys almost nothing — and the linear model's
+coefficients can be read aloud to an estate agent.
+
+k-nearest neighbours is last at 0.725. It is the one family here whose distance
+metric has to survive two hundred-odd one-hot columns, and it does not.
+
 ## More features only help a model that can use them
 
 The course adds features in stages. Measured at two model capacities:

@@ -84,6 +84,35 @@ sit $70,000–$100,000 away from it. Nothing here is a model that mistakes a
 mansion for a bungalow. The residual difficulty of this task is the width of the
 band around an arbitrary line.
 
+## 4b. Model selection, and the cost of tuning on your test folds
+`model_selection.csv`
+
+| model | best params | same folds | nested CV | optimism |
+|---|---|---:|---:|---:|
+| decision tree | depth 5, leaf 1 | 0.758 | 0.731 | **+0.027** |
+| k-nearest neighbours | k=3, uniform | 0.744 | 0.725 | +0.019 |
+| logistic regression | C=0.3 | 0.819 | 0.819 | **+0.000** |
+| random forest | max_features 0.3, leaf 1 | 0.833 | 0.826 | +0.008 |
+
+`GridSearchCV.best_score_` is the cross-validated score of whichever
+configuration won on those folds. Reporting it as the model's performance counts
+the winner's luck as skill, and the bias is not uniform — it scales with the
+size of the search and the variance of the estimator. Twelve configurations of a
+depth-tunable tree inflate F1 by 0.027; four values of `C` on a linear model by
+0.000. So the ranking itself is distorted by how hard each family was searched,
+which is the argument for nesting rather than for searching less.
+
+Under honest evaluation the gap between the best and second-best family is
+**0.007 F1** — logistic regression at 0.819 against the random forest at 0.826.
+On one-hot encoded Ames features this boundary is close to linear. The forest is
+not meaningfully better, and the linear model's coefficients can be shown to a
+client.
+
+k-nearest neighbours comes last (0.725). After one-hot encoding the feature
+space has a couple of hundred mostly-zero dimensions, and a distance metric
+averaged over those is close to uninformative — the one family here whose core
+assumption the preprocessing breaks.
+
 ## 5. The threshold is a business decision
 `threshold_table.csv`
 

@@ -107,6 +107,46 @@ def main() -> int:
         "B_wins_folds": int((diff > 0).sum()),
         "paired_t_p_value": round(float(pval), 4)}]))
 
+    # --- 4b. model selection, honestly ------------------------------------
+    # Each family is tuned twice: once scoring on the same folds the search
+    # used, and once with nested cross-validation, where the search runs inside
+    # each training split. The gap is the optimism that a single GridSearchCV
+    # `best_score_` quietly reports as a result.
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.model_selection import GridSearchCV, cross_val_score
+    from sklearn.neighbors import KNeighborsClassifier
+
+    inner = StratifiedKFold(4, shuffle=True, random_state=1)
+    grids = {
+        "decision tree": (DecisionTreeClassifier(random_state=0),
+                          {"est__max_depth": [3, 5, 8, None],
+                           "est__min_samples_leaf": [1, 5, 20]}),
+        "k-nearest neighbours": (KNeighborsClassifier(),
+                                 {"est__n_neighbors": [3, 5, 11, 21],
+                                  "est__weights": ["uniform", "distance"]}),
+        "logistic regression": (LogisticRegression(max_iter=2000),
+                                {"est__C": [0.03, 0.3, 3, 30]}),
+        "random forest": (RandomForestClassifier(random_state=0, n_jobs=-1),
+                          {"est__n_estimators": [300],
+                           "est__max_features": ["sqrt", 0.3],
+                           "est__min_samples_leaf": [1, 3]}),
+    }
+    rows = []
+    for name, (est, grid) in grids.items():
+        gs = GridSearchCV(pipeline.model(X_all, est), grid, scoring="f1",
+                          cv=cv, n_jobs=-1).fit(X_all, y)
+        nested = cross_val_score(
+            GridSearchCV(pipeline.model(X_all, est), grid, scoring="f1",
+                         cv=inner, n_jobs=-1),
+            X_all, y, cv=cv, scoring="f1").mean()
+        rows.append({"model": name,
+                     "best_params": str({k.replace("est__", ""): v
+                                         for k, v in gs.best_params_.items()}),
+                     "f1_tuned_and_scored_on_same_folds": round(float(gs.best_score_), 3),
+                     "f1_nested_cv": round(float(nested), 3),
+                     "optimism": round(float(gs.best_score_ - nested), 3)})
+    emit("model_selection", pd.DataFrame(rows))
+
     # --- 5. phase two: the price itself -----------------------------------
     rows = []
     for name, target, back in [("trained on SalePrice", price, lambda v: v),
