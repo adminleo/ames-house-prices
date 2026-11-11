@@ -1,0 +1,2 @@
+folds,A_classify_f1,A_sd,B_regress_then_cut_f1,B_sd,paired_diff,paired_sd,B_wins_folds,paired_t_p_value
+20,0.813,0.064,0.843,0.05,0.03,0.047,14,0.0098

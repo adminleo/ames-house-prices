@@ -1,0 +1,5 @@
+outcome,houses,median_price,distance_from_cutoff
+true positive,159,320000.0,69420.0
+false negative (missed),58,268000.0,17420.0
+false positive (false alarm),16,238500.0,-12080.0
+true negative,1227,149900.0,-100680.0

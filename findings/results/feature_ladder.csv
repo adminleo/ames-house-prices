@@ -1,0 +1,9 @@
+iteration,features,model,accuracy,precision,recall,f1,roc_auc
+0-2  nine numeric,9,decision tree (depth 5),0.923,0.776,0.682,0.724,0.868
+0-2  nine numeric,9,random forest,0.916,0.77,0.632,0.693,0.933
+3    + one-hot categoricals,15,decision tree (depth 5),0.917,0.762,0.654,0.702,0.87
+3    + one-hot categoricals,15,random forest,0.924,0.813,0.636,0.713,0.948
+4    + ordinal categoricals,23,decision tree (depth 5),0.908,0.701,0.682,0.69,0.864
+4    + ordinal categoricals,23,random forest,0.94,0.88,0.691,0.773,0.965
+5    all features,79,decision tree (depth 5),0.929,0.773,0.747,0.758,0.849
+5    all features,79,random forest,0.95,0.913,0.733,0.813,0.986

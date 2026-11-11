@@ -1,0 +1,6 @@
+data
+data/
+*.csv
+!findings/results/*.csv
+__pycache__/
+.DS_Store
